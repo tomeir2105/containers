@@ -12,18 +12,20 @@ set -o nounset
 
 # Function to display usage help
 usage() {
-    echo "Usage: $0 [--stop-all] [--delete-all] [--install] [--help]"
+    echo "Usage: $0 [--stop-all] [--delete-all] [--install] [--run <container_name>] [--help]"
     echo
     echo "Options:"
     echo "  --stop-all      Stop all running Docker containers."
     echo "  --delete-all    Delete all Docker images on the host."
     echo "  --install       Pull the specified Docker images."
+    echo "  --run <container_name>  Run the specified container by name. If it doesn't exist, it will be pulled and started."
     echo "  --help          Display this help message."
     echo
     echo "Examples:"
     echo "  $0 --stop-all      # Stop all running containers."
     echo "  $0 --delete-all    # Delete all Docker images."
     echo "  $0 --install       # Pull the specified Docker images."
+    echo "  $0 --run nginx     # Run the 'nginx' container (pulls it if not exists)."
     echo "  $0 --help          # Show help usage."
     echo
     echo "Image List:"
@@ -88,4 +90,35 @@ if [[ "$1" == "--install" ]]; then
             print_msg "Failed to pull $image."
         fi
     done
+fi
+
+# Check if the --run parameter is passed
+if [[ "$1" == "--run" ]]; then
+    # Check if container name is provided
+    if [[ -z "$2" ]]; then
+        print_msg "Please specify a container name to run."
+        exit 1
+    fi
+
+    container_name="$2"
+
+    # Check if the container is already running
+    if [[ "$(sudo docker ps -q -f name=$container_name)" ]]; then
+        print_msg "The container '$container_name' is already running."
+    else
+        # Check if the container exists (stopped but not deleted)
+        if [[ "$(sudo docker ps -aq -f name=$container_name)" ]]; then
+            print_msg "The container '$container_name' exists but is stopped. Restarting..."
+            sudo docker start "$container_name"
+        else
+            # If the container does not exist, pull the image and run the container
+            print_msg "The container '$container_name' does not exist. Pulling the image and starting the container..."
+            if sudo docker pull "$container_name"; then
+                sudo docker run -d --name "$container_name" "$container_name"
+                print_msg "Container '$container_name' started successfully."
+            else
+                print_msg "Failed to pull the image for container '$container_name'."
+            fi
+        fi
+    fi
 fi
