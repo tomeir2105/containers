@@ -3,7 +3,7 @@
 # Created by : Meir
 # Purpose : Docker Cleanup, Network Creation, Container Run, and List Networks/Containers
 # Date : 19/4/2025
-# Version : 1
+# Version : 7
 ######################################
 
 set -o errexit
@@ -12,13 +12,13 @@ set -o nounset
 
 # Function to display usage help
 usage() {
-    echo "Usage: $0 [--delete-all] [--create-network <network_name>] [--run <container_name> <network_name>] [--connect <container_name>] [--list] [--help]"
+    echo "Usage: $0 [--delete-all] [--create-network <network_name>] [--run <container_name> <network_name>] [--connect <container_name> [<network_name>]] [--list] [--help]"
     echo
     echo "Options:"
     echo "  --delete-all             Delete all Docker images and containers on the host."
     echo "  --create-network <network_name>   Create a Docker network with the specified name (default: bridge)."
     echo "  --run <container_name> <network_name>   Run a container by name and connect it to the specified network."
-    echo "  --connect <container_name>   Connect the specified container to the default network (bridge)."
+    echo "  --connect <container_name> [<network_name>]   Connect the specified container to the given network (default: bridge if no network is specified)."
     echo "  --list                   List all Docker networks and the containers connected to them."
     echo "  --help                   Display this help message."
     echo
@@ -27,6 +27,7 @@ usage() {
     echo "  $0 --create-network my-network"
     echo "  $0 --run nginx bridge"
     echo "  $0 --connect my-container"
+    echo "  $0 --connect my-container my-network"
     echo "  $0 --list"
     exit 0
 }
@@ -119,6 +120,7 @@ case "$1" in
         fi
 
         container_name=$2
+        network_name=${3:-$default_network}  # Default to bridge if no network is specified
 
         # Check if the container exists and is running
         if ! sudo docker ps -q -f "name=$container_name" &> /dev/null; then
@@ -128,10 +130,17 @@ case "$1" in
             exit 1
         fi
 
-        # Connect the container to the default network (bridge)
-        print_msg "Connecting container '$container_name' to network '$default_network'..."
-        sudo docker network connect "$default_network" "$container_name"
-        print_msg "Container '$container_name' is now connected to the default network '$default_network'."
+        # Check if the network exists
+        if ! sudo docker network inspect "$network_name" &> /dev/null; then
+            print_msg "Network '$network_name' does not exist. Creating it now..."
+            sudo docker network create "$network_name"
+            print_msg "Network '$network_name' created successfully."
+        fi
+
+        # Connect the container to the specified network
+        print_msg "Connecting container '$container_name' to network '$network_name'..."
+        sudo docker network connect "$network_name" "$container_name"
+        print_msg "Container '$container_name' is now connected to network '$network_name'."
         ;;
     --list)
         # List all networks and their connected containers
