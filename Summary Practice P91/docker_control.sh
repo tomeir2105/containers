@@ -46,8 +46,8 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if --help or no option is passed
-if [[ "$1" == "--help" ]] || [[ -z "$1" ]]; then
+# Check if no option is passed or if --help is requested
+if [[ -z "${1:-}" ]] || [[ "$1" == "--help" ]]; then
     usage
 fi
 
@@ -95,7 +95,7 @@ fi
 # Check if the --run parameter is passed
 if [[ "$1" == "--run" ]]; then
     # Check if container name is provided
-    if [[ -z "$2" ]]; then
+    if [[ -z "${2:-}" ]]; then
         print_msg "Please specify a container name to run."
         exit 1
     fi
