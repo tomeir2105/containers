@@ -1,11 +1,12 @@
 
-# Docker Management Script
+# Docker Management Scripts
 
 ## Overview
 This two scripts are designed to manage Docker containers and images.
 - docker_control.sh - provides options to stop containers, delete images, pull images, validate containers, check logs, and search Docker Hub repositories. It is a simple yet powerful tool for Docker management and automation.
 - docker_net.sh -  runs 3 specified containers with different predefined names under specific my_network.
 
+# Docker Control script info
 ## Features
 - Stop all running containers.
 - Delete all containers and images from the host.
