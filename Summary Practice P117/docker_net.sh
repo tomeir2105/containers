@@ -3,7 +3,7 @@
 # Created by : Meir
 # Purpose : Docker Cleanup, Network Creation, Container Run, and List Networks/Containers
 # Date : 19/4/2025
-# Version : 5
+# Version : 1
 ######################################
 
 set -o errexit
@@ -12,19 +12,21 @@ set -o nounset
 
 # Function to display usage help
 usage() {
-    echo "Usage: $0 [--delete-all] [--create-network <network_name>] [--run <container_name> <network_name>] [--list] [--help]"
+    echo "Usage: $0 [--delete-all] [--create-network <network_name>] [--run <container_name> <network_name>] [--connect <container_name>] [--list] [--help]"
     echo
     echo "Options:"
     echo "  --delete-all             Delete all Docker images and containers on the host."
-    echo "  --create-network <network_name>   Create a Docker network with the specified name (default: vaio-net)."
+    echo "  --create-network <network_name>   Create a Docker network with the specified name (default: bridge)."
     echo "  --run <container_name> <network_name>   Run a container by name and connect it to the specified network."
+    echo "  --connect <container_name>   Connect the specified container to the default network (bridge)."
     echo "  --list                   List all Docker networks and the containers connected to them."
     echo "  --help                   Display this help message."
     echo
     echo "Examples:"
     echo "  $0 --delete-all"
     echo "  $0 --create-network my-network"
-    echo "  $0 --run nginx vaio-net"
+    echo "  $0 --run nginx bridge"
+    echo "  $0 --connect my-container"
     echo "  $0 --list"
     exit 0
 }
@@ -44,6 +46,9 @@ fi
 if [[ $# -eq 0 ]]; then
     usage
 fi
+
+# Default network (Docker's default network)
+default_network="bridge"
 
 # Parse arguments
 case "$1" in
@@ -70,7 +75,7 @@ case "$1" in
         print_msg "Docker system prune completed. All unused containers, images, networks, and volumes are removed."
         ;;
     --create-network)
-        network_name=${2:-vaio-net}
+        network_name=${2:-$default_network}
         if [[ -z "$network_name" ]]; then
             echo "Please provide a network name after --create-network"
             exit 1
@@ -105,6 +110,28 @@ case "$1" in
         print_msg "Running container '$container_name' and connecting it to network '$network_name'..."
         sudo docker run -dit --name "$container_name-instance" --network "$network_name" "$container_name"
         print_msg "Container '$container_name' is running and connected to network '$network_name'."
+        ;;
+    --connect)
+        # Ensure container name is provided
+        if [[ -z "${2:-}" ]]; then
+            echo "Please provide a container name after --connect"
+            exit 1
+        fi
+
+        container_name=$2
+
+        # Check if the container exists and is running
+        if ! sudo docker ps -q -f "name=$container_name" &> /dev/null; then
+            print_msg "Container '$container_name' is not running or does not exist."
+            print_msg "Listing all containers..."
+            sudo docker ps -a
+            exit 1
+        fi
+
+        # Connect the container to the default network (bridge)
+        print_msg "Connecting container '$container_name' to network '$default_network'..."
+        sudo docker network connect "$default_network" "$container_name"
+        print_msg "Container '$container_name' is now connected to the default network '$default_network'."
         ;;
     --list)
         # List all networks and their connected containers
