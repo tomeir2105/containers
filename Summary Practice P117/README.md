@@ -73,8 +73,7 @@ A Bash script that simplifies common Docker tasks including cleanup, network man
 
 ## 🪪 License
 
-**Free to use, modify, and distribute. No license restrictions apply.**  
-Use this script for learning, automation, or production — no strings attached.
+**Free to use, modify, and distribute.
 
 ---
 
