@@ -1,77 +1,94 @@
 
 # Docker Management Script
 
-This script allows you to perform various Docker operations such as stopping containers, deleting images, pulling specified images, running containers, validating if a container is running, and checking logs of containers.
+## Overview
+This script is designed to manage Docker containers and images. It provides options to stop containers, delete images, pull images, validate containers, check logs, and search Docker Hub repositories. It is a simple yet powerful tool for Docker management and automation.
 
 ## Features
-
-- **Stop all running Docker containers**: Stops all running containers on your system.
-- **Delete all Docker images**: Deletes all images from your Docker host.
-- **Pull Docker images**: Pulls a predefined list of Docker images (`debian`, `rockylinux:8`, `nginx`).
-- **Run a container**: Runs a specified container by name. If the container doesn't exist, it will be pulled and started.
-- **Validate if a container is running**: Validates if a container is currently running by its name.
-- **View container logs**: Displays the logs of a specified container.
+- Stop all running containers.
+- Delete all containers and images from the host.
+- Pull specific Docker images.
+- Run containers (pull image if not available locally).
+- Validate if a container is running.
+- View logs of a specific container.
+- Search Docker Hub for container images.
+- Show release information of a Docker image.
+- Clean up unused Docker data using `docker system prune`.
 
 ## Usage
-
-### Options:
-
 ```bash
-Usage: ./docker_script.sh [--stop-all] [--delete-all] [--install] [--run <container_name>] [--validate <container_name>] [--logs <container_name>] [--help]
+./docker_script.sh [options]
 ```
 
-### Available Options:
+## Options
+### `--stop-all`
+Stop all running Docker containers.
 
-- `--stop-all`: Stop all running Docker containers.
-- `--delete-all`: Delete all Docker images on the host.
-- `--install`: Pull the specified Docker images (`debian`, `rockylinux:8`, `nginx`).
-- `--run <container_name>`: Run the specified container by name. If it doesn't exist, it will be pulled and started.
-- `--validate <container_name>`: Validate if a container is running by name.
-- `--logs <container_name>`: Display the logs of the specified container.
-- `--help`: Display this help message.
+### `--delete-all`
+Delete all Docker containers and images from the host, followed by a system prune to remove unused data (containers, networks, volumes, images).
 
-### Example Commands:
-
-- **Stop all running containers**:
-  ```bash
-  ./docker_script.sh --stop-all
-  ```
-
-- **Delete all Docker images**:
-  ```bash
-  ./docker_script.sh --delete-all
-  ```
-
-- **Pull and install Docker images**:
-  ```bash
-  ./docker_script.sh --install
-  ```
-
-- **Run a specified container** (e.g., `nginx`):
-  ```bash
-  ./docker_script.sh --run nginx
-  ```
-
-- **Validate if a specified container is running** (e.g., `nginx`):
-  ```bash
-  ./docker_script.sh --validate nginx
-  ```
-
-- **View logs of a specified container** (e.g., `nginx`):
-  ```bash
-  ./docker_script.sh --logs nginx
-  ```
-
-### Image List:
-
+### `--install`
+Pull the specified Docker images:
 - `debian`
 - `rockylinux:8`
 - `nginx`
 
-## Requirements:
+### `--run <container_name>`
+Run the specified container in detached and interactive mode. If the image is not found locally, it will be pulled from Docker Hub.
 
-- Docker must be installed and available in your system's PATH.
+### `--validate <container_name>`
+Validate if the specified container is running.
 
-## License:
+### `--logs <container_name>`
+View the logs of a specific container.
 
-free to use for everyone.
+### `--search <image_name>`
+Search Docker Hub for images that match the specified name. Limited to 100 results.
+
+### `--release-info <image_name>`
+Run the specified container and print `/etc/*release` to display the image's version and distribution information.
+
+### `--help`
+Display this help message.
+
+## Examples
+- **Stop all running containers**:
+  ```bash
+  ./docker_script.sh --stop-all
+  ```
+- **Delete all containers and images**:
+  ```bash
+  ./docker_script.sh --delete-all
+  ```
+- **Install specified images**:
+  ```bash
+  ./docker_script.sh --install
+  ```
+- **Run a container**:
+  ```bash
+  ./docker_script.sh --run nginx
+  ```
+- **Validate if a container is running**:
+  ```bash
+  ./docker_script.sh --validate nginx
+  ```
+- **View logs of a container**:
+  ```bash
+  ./docker_script.sh --logs nginx
+  ```
+- **Search Docker Hub for an image**:
+  ```bash
+  ./docker_script.sh --search nginx
+  ```
+- **Show release info for an image**:
+  ```bash
+  ./docker_script.sh --release-info rockylinux:8
+  ```
+
+## Image List (for `--install`):
+- `debian`
+- `rockylinux:8`
+- `nginx`
+
+## License
+Free to use
