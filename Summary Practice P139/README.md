@@ -1,5 +1,5 @@
 
-# Docker Utility Script
+# Docker Volumes Utility Script
 
 ## Description
 This script provides several utilities to manage Docker containers, volumes, and networks. It allows for operations such as creating volumes, mounting volumes to containers, killing containers, checking storage, verifying folder existence inside running containers, listing containers and volumes, and removing Docker resources.
