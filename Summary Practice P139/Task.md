@@ -1,5 +1,5 @@
 # Summary Practice
-## Let’s create a Docker volume and mount it to persist MySQL data:
+## Create a Docker volume and mount it to persist MySQL data
 - Create volume name mysql-data
 - Run mysql container in the background and mount it with storage
 - Kill mysql container
