@@ -1,5 +1,5 @@
 
-# Docker Volumes Utility Script
+# Docker Utility Script
 
 ## Description
 This script provides several utilities to manage Docker containers, volumes, and networks. It allows for operations such as creating volumes, mounting volumes to containers, killing containers, checking storage, verifying folder existence inside running containers, listing containers and volumes, and removing Docker resources.
@@ -21,7 +21,30 @@ This script provides several utilities to manage Docker containers, volumes, and
 ```
 
 ### Options:
-1. **`--delete-all`**
+1. **`--help`**
+   - Displays the help message for the script, listing all available options.
+   - **Example:**
+     ```bash
+     ./docker_utility.sh --help
+     ```
+   - **Output:**
+     ```
+     Usage: ./docker_utility.sh [OPTION] [PARAMETERS]
+
+     Options:
+       --delete-all             Delete all Docker containers and images on the host.
+       --create-volume <volume_name>   Create a Docker volume with the specified name.
+       --mount <container_image> <volume_name>   Pull image (if missing), run container, and mount volume.
+       --kill <container_name>   Stop and remove the specified container.
+       --verify-volume <volume_name>   Verify if a Docker volume exists.
+       --test-folder <container_name> <folder_path>   Check if folder exists inside a running container.
+       --list-volumes            List all Docker volumes.
+       --mounts                  List all containers and their mounted volumes.
+       --remove-volume <volume_name>   Remove a specific Docker volume.
+       --help                    Display this help message.
+     ```
+
+2. **`--delete-all`**
    - Deletes all Docker containers and images on the host and runs `docker system prune`.
    - **Example:**
      ```bash
@@ -37,7 +60,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      Prune completed.
      ```
 
-2. **`--create-volume <volume_name>`**
+3. **`--create-volume <volume_name>`**
    - Creates a Docker volume with the specified name.
    - **Example:**
      ```bash
@@ -49,7 +72,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      Volume created.
      ```
 
-3. **`--mount <container_image> <volume_name>`**
+4. **`--mount <container_image> <volume_name>`**
    - Pulls the container image (if missing), runs a container from the image, and mounts the specified volume.
    - **Example:**
      ```bash
@@ -62,7 +85,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      Container 'nginx-mounted' is running.
      ```
 
-4. **`--kill <container_name>`**
+5. **`--kill <container_name>`**
    - Stops and removes the specified container.
    - **Example:**
      ```bash
@@ -75,7 +98,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      Container removed.
      ```
 
-5. **`--verify-volume <volume_name>`**
+6. **`--verify-volume <volume_name>`**
    - Verifies if a Docker volume exists.
    - **Example:**
      ```bash
@@ -86,7 +109,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      Docker volume 'my_volume' exists.
      ```
 
-6. **`--test-folder <container_name> <folder_path>`**
+7. **`--test-folder <container_name> <folder_path>`**
    - Checks if the specified folder exists inside a running container.
    - **Example:**
      ```bash
@@ -98,7 +121,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      Folder '/mnt/data' exists in container 'my_container'.
      ```
 
-7. **`--list-volumes`**
+8. **`--list-volumes`**
    - Lists all Docker volumes on the host.
    - **Example:**
      ```bash
@@ -111,7 +134,7 @@ This script provides several utilities to manage Docker containers, volumes, and
      - another_volume
      ```
 
-8. **`--mounts`**
+9. **`--mounts`**
    - Lists all containers along with their mounted volume names and paths.
    - **Example:**
      ```bash
@@ -123,43 +146,19 @@ This script provides several utilities to manage Docker containers, volumes, and
        Volume: my_volume → /mnt/my_volume
      ```
 
-9. **`--remove-volume <volume_name>`**
-   - Removes the specified Docker volume.
-   - **Example:**
-     ```bash
-     ./docker_utility.sh --remove-volume my_volume
-     ```
-   - **Output:**
-     ```
-     This will remove volume 'my_volume'.
-     Are you sure? (y/n): y
-     Removing volume 'my_volume'...
-     Volume 'my_volume' has been removed.
-     ```
-
-10. **`--help`**
-    - Displays the help message for the script, listing all available options.
+10. **`--remove-volume <volume_name>`**
+    - Removes the specified Docker volume.
     - **Example:**
       ```bash
-      ./docker_utility.sh --help
+      ./docker_utility.sh --remove-volume my_volume
       ```
     - **Output:**
       ```
-      Usage: ./docker_utility.sh [OPTION] [PARAMETERS]
-
-      Options:
-        --delete-all             Delete all Docker containers and images on the host.
-        --create-volume <volume_name>   Create a Docker volume with the specified name.
-        --mount <container_image> <volume_name>   Pull image (if missing), run container, and mount volume.
-        --kill <container_name>   Stop and remove the specified container.
-        --verify-volume <volume_name>   Verify if a Docker volume exists.
-        --test-folder <container_name> <folder_path>   Check if folder exists inside a running container.
-        --list-volumes            List all Docker volumes.
-        --mounts                  List all containers and their mounted volumes.
-        --remove-volume <volume_name>   Remove a specific Docker volume.
-        --help                    Display this help message.
+      This will remove volume 'my_volume'.
+      Are you sure? (y/n): y
+      Removing volume 'my_volume'...
+      Volume 'my_volume' has been removed.
       ```
 
 ## License
 Free to use.
-
