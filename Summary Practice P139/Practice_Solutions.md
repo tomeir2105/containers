@@ -15,6 +15,7 @@
 
 ## Test that data is the same and not corrupted (accessing remote folder should be enough)
 ./volumes.sh --mounts
+
 ./volumes.sh --test-folder mysql /mnt/new_vol
 
 ## List volumes
