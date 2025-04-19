@@ -12,16 +12,17 @@ set -o nounset
 
 # Function to display usage help
 usage() {
-    echo "Usage: $0 [--stop-all] [--delete-all] [--install] [--run <container_name>] [--validate <container_name>] [--logs <container_name>] [--search <image_name>] [--help]"
+    echo "Usage: $0 [--stop-all] [--delete-all] [--install] [--run <container_name>] [--validate <container_name>] [--logs <container_name>] [--search <image_name>] [--release-info <image_name>] [--help]"
     echo
     echo "Options:"
     echo "  --stop-all               Stop all running Docker containers."
-    echo "  --delete-all             Delete all Docker images on the host."
+    echo "  --delete-all             Delete all Docker images and containers on the host."
     echo "  --install                Pull the specified Docker images."
     echo "  --run <container_name>   Run the specified container (pulls image if not found)."
     echo "  --validate <name>        Validate that a container is running by name."
     echo "  --logs <name>            View logs of a specific container."
     echo "  --search <image_name>    Search Docker Hub for container images (limit 100)."
+    echo "  --release-info <image>   Run specified container and print /etc/*release."
     echo "  --help                   Display this help message."
     echo
     echo "Examples:"
@@ -32,6 +33,7 @@ usage() {
     echo "  $0 --validate nginx"
     echo "  $0 --logs nginx"
     echo "  $0 --search nginx"
+    echo "  $0 --release-info rockylinux:8"
     echo
     echo "Image List (for --install):"
     echo "  debian"
@@ -67,12 +69,26 @@ case "$1" in
         fi
         ;;
     --delete-all)
+        # Stop and remove all containers
+        if [ "$(sudo docker ps -aq)" ]; then
+            sudo docker rm -f $(sudo docker ps -aq)
+            print_msg "All containers have been removed."
+        else
+            print_msg "No containers to remove."
+        fi
+
+        # Delete all images on your host
         if [ "$(sudo docker images -q)" ]; then
             sudo docker rmi -f $(sudo docker images -q)
             print_msg "All Docker images have been deleted."
         else
             print_msg "No images to delete."
         fi
+
+        # Run docker system prune to remove unused data (containers, networks, volumes, images)
+        print_msg "Running docker system prune to clean up unused resources..."
+        sudo docker system prune -a --volumes -f
+        print_msg "Docker system prune completed. All unused containers, images, networks, and volumes are removed."
         ;;
     --install)
         print_msg "Pulling the specified Docker images..."
@@ -134,6 +150,24 @@ case "$1" in
             printf "%3d. %s\n" "$count" "$line"
             ((count++))
         done
+        ;;
+    --release-info)
+        image_name=${2:-}
+        if [[ -z "$image_name" ]]; then
+            echo "Please provide an image name after --release-info"
+            exit 1
+        fi
+
+        container_name="release-info-temp"
+
+        print_msg "Pulling $image_name if not available..."
+        sudo docker pull "$image_name" > /dev/null
+
+        print_msg "Running container '$image_name' to print release info..."
+        sudo docker run --rm -dit --name "$container_name" "$image_name" bash -c "cat /etc/*release; sleep 3"
+
+        print_msg "Release info from '$image_name':"
+        sudo docker logs "$container_name"
         ;;
     --help)
         usage
