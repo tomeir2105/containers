@@ -1,0 +1,21 @@
+# Clean all containers and image from your host
+sudo docker rm -f $(sudo docker ps -aq)
+sudo docker rmi -f $(sudo docker images -q)
+
+# Create docker network named vaio-net
+sudo docker network create vaio-net
+
+# Run alpine container on custom docker network named vaio-net
+sudo docker run -dit --name alpine --network vaio-net alpine
+
+# Run nginx container on custom docker network named vaio-net
+sudo docker run -dit --name nginx --network vaio-net nginx
+
+# Run ubuntu/apache2 container on default docker network
+sudo docker run -dit ubuntu/apache2
+
+# Run from alpine container ping command to test connectivity with ubuntu/apache2
+
+
+# BONUS: connect already running ubuntu/apache2 container to vaio-net
+  Delete all the containers images and network
