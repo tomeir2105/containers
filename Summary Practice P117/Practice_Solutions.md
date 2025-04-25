@@ -1,32 +1,32 @@
-# Clean all containers and image from your host
+### Clean all containers and image from your host
 sudo docker rm -f $(sudo docker ps -aq)
 sudo docker rmi -f $(sudo docker images -q)
 
-# Create docker network named vaio-net
+### Create docker network named vaio-net
 sudo docker network create vaio-net
 
-# Run alpine container on custom docker network named vaio-net
+### Run alpine container on custom docker network named vaio-net
 docker run -dit --name alpine-container --network vaio-net alpine
 
-# Run nginx container on custom docker network named vaio-net
+### Run nginx container on custom docker network named vaio-net
 docker run -dit --name nginx-container --network vaio-net nginx
 
-# Run ubuntu/apache2 container on default docker network
+### Run ubuntu/apache2 container on default docker network
 docker run -dit --name apache-container ubuntu bash
 docker exec apache-container apt update
 docker exec apache-container apt install -y apache2
 
-# Run from alpine container ping command to test connectivity with ubuntu/apache2
-# GET IP OF CONTAINER - 
+### Run from alpine container ping command to test connectivity with ubuntu/apache2
+### GET IP OF CONTAINER - 
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' apache-container
 docker exec -it alpine-container ping <IP-ADDRESS-FROM-ABOVE>
 
 
-# BONUS: connect already running ubuntu/apache2 container to vaio-net
+### BONUS: connect already running ubuntu/apache2 container to vaio-net
 docker network connect vaio-net apache-container
 docker exec -it alpine-container ping apache-container
 
-# Delete all the containers images and network
+### Delete all the containers images and network
 docker rm -f $(docker ps -aq)
 docker rmi -f $(docker images -q)
 docker network rm vaio-net
